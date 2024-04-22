@@ -1,6 +1,5 @@
-package com.example.spring5.kj;
+package com.example.spring5.kj.controller;
 
-import com.example.spring5.kj.controller.WheeledVehicleController;
 import com.example.spring5.kj.model.Car;
 import com.example.spring5.kj.model.Truck;
 import com.example.spring5.kj.model.WheeledDrone;
@@ -14,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpMethod;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -41,6 +42,12 @@ class ApplicationTests {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
+	private final Car car1 = new Car(4, "model", 2000, true);
+	private final Car car2 = new Car(4, "model", 2001, true);
+	private final Car cherokee = new Car(4, "Cherokee", 1992, true);
+	private final Truck silverado = new Truck(4, "Silverado", 1992, 10);
+	private final WheeledDrone lightening = new WheeledDrone(4, "lightening", 1992, false);
+
 	@BeforeEach
     void setup() {
 		this.baseUrl = "http://localhost:"+this.port;
@@ -54,17 +61,20 @@ class ApplicationTests {
 	@Test
 	void contextLoads() {
 		assertNotNull(wheeledVehicleController);
+		assertNotNull(wheeledVehicles);
+		assertNotNull(restTemplate);
+		assertThat(port).isGreaterThan(0);
 	}
 
 	@Test
 	void helloWorld() throws URISyntaxException {
-		assertThat(helloHelper()).isEqualTo("Hello World, we have 0 vehicles in stock!");
-		putCar(new Car(4, "model", 2000, true));
-		assertThat(helloHelper()).isEqualTo("Hello World, we have 1 vehicle in stock!");
-		putCar(new Car(4, "model", 2000, true));
-		assertThat(helloHelper()).isEqualTo("Hello World, we have 1 vehicle in stock!");
-		putCar(new Car(4, "model", 2001, true));
-		assertThat(helloHelper()).isEqualTo("Hello World, we have 2 vehicles in stock!");
+		assertThat(helloHelper()).isEqualTo(new ApiResponse("Hello World, we have 0 vehicles in stock!", null));
+		putVehicle(car1);
+		assertThat(helloHelper()).isEqualTo(new ApiResponse("Hello World, we have 1 vehicle in stock!", null));
+		putVehicle(car1);
+		assertThat(helloHelper()).isEqualTo(new ApiResponse("Hello World, we have 1 vehicle in stock!", null));
+		putVehicle(car2);
+		assertThat(helloHelper()).isEqualTo(new ApiResponse("Hello World, we have 2 vehicles in stock!", null));
 	}
 
 	@Test
@@ -82,13 +92,8 @@ class ApplicationTests {
 								}"""
 				)
 		);
-		Car actual = restTemplate.getForEntity(
-				new URI(baseUrl + "/api/wheeledVehicle/0"),
-				Car.class
-		).getBody();
-		assertThat(actual).isEqualTo(
-				new Car(4, "Cherokee", 1992, true)
-		);
+		Car actual = getHelper(Car.class, 0);
+		assertThat(actual).isEqualTo(cherokee);
 	}
 
 	@Test
@@ -106,13 +111,8 @@ class ApplicationTests {
 								}"""
 				)
 		);
-		Truck actual = restTemplate.getForEntity(
-				new URI(baseUrl + "/api/wheeledVehicle/0"),
-				Truck.class
-		).getBody();
-		assertThat(actual).isEqualTo(
-				new Truck(4, "Silverado", 1992, 10)
-		);
+		Truck actual = getHelper(Truck.class, 0);
+		assertThat(actual).isEqualTo(silverado);
 	}
 
 	@Test
@@ -130,25 +130,47 @@ class ApplicationTests {
 								}"""
 				)
 		);
-		WheeledDrone actual = restTemplate.getForEntity(
-				new URI(baseUrl + "/api/wheeledVehicle/0"),
-				WheeledDrone.class
-		).getBody();
-		assertThat(actual).isEqualTo(
-				new WheeledDrone(4, "lightening", 1992, false)
-		);
+		WheeledDrone actual = getHelper(WheeledDrone.class, 0);
+		assertThat(actual).isEqualTo(lightening);
 	}
 
-	private void putCar(Car car) throws URISyntaxException {
+	@Test
+	void testDeleteDex() throws URISyntaxException {
+		URI url = new URI(baseUrl + "/api/wheeledVehicle/" + 0);
+		putVehicle(car1);
+		Car actual = getHelper(Car.class, 0);
+		assertThat(actual).isEqualTo(car1);
+		assertThat(wheeledVehicles.size()).isEqualTo(1);
+		ApiResponse deleteResponse = restTemplate.exchange(
+				url,
+				HttpMethod.DELETE,
+				null,
+				ApiResponse.class
+		).getBody();
+		assertThat(deleteResponse).isEqualTo(new ApiResponse("Vehicle deleted", car1));
+		assertThat(wheeledVehicles.size()).isEqualTo(0);
+		ApiResponse getResponse = restTemplate.getForEntity(
+				baseUrl + "/api/wheeledVehicle/" + 0, ApiResponse.class
+		).getBody();
+		assertThat(getResponse).isEqualTo(new ApiResponse("wheeledVehicleId 0 out of range", null));
+	}
+
+	private void putVehicle(WheeledVehicle wheeledVehicle) throws URISyntaxException {
 		restTemplate.put(
 				new URI(baseUrl + "/api/wheeledVehicle"),
-				car
+				wheeledVehicle
 		);
 	}
 
-	private String helloHelper() throws URISyntaxException {
+	private ApiResponse helloHelper() throws URISyntaxException {
 		return restTemplate.getForEntity(
-				new URI(baseUrl),String.class
+				new URI(baseUrl), ApiResponse.class
+		).getBody();
+	}
+
+	private <T extends WheeledVehicle> T getHelper(Class<T> tClass, Integer dex) throws URISyntaxException {
+		return restTemplate.getForEntity(
+				new URI(baseUrl + "/api/wheeledVehicle/" + dex), tClass
 		).getBody();
 	}
 

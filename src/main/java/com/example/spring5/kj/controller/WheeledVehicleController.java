@@ -18,33 +18,52 @@ public class WheeledVehicleController {
     }
 
     @GetMapping(value = "/")
-    String root() {
-        return "Hello World, we have " + wheeledVehicles.size() +
-                 (wheeledVehicles.size() != 1 ? " vehicles" : " vehicle") +
-                " in stock!";
+    ApiResponse root() {
+        return new ApiResponse(
+        "Hello World, we have " + wheeledVehicles.size() +
+                (wheeledVehicles.size() != 1 ? " vehicles" : " vehicle") +
+                " in stock!",
+        null);
     }
 
     @PutMapping(value = "/api/wheeledVehicle")
-    ResponseEntity<String> addCar(@RequestBody WheeledVehicle wheeledVehicle) throws URISyntaxException {
+    ResponseEntity<ApiResponse> addCar(@RequestBody WheeledVehicle wheeledVehicle) throws URISyntaxException {
         int dex = wheeledVehicles.indexOf(wheeledVehicle);
         if(dex >= 0) {
-            return ResponseEntity.ok("Already exists at /api/wheeledVehicle/" + dex);
+            return ResponseEntity.ok(new ApiResponse(
+                    "Already exists at /api/wheeledVehicle/" + dex, wheeledVehicle
+            ));
         } else {
             wheeledVehicles.add(wheeledVehicle);
             URI uri = new URI("/api/wheeledVehicle/" + (wheeledVehicles.size() - 1));
-            return ResponseEntity
-                    .created(uri)
-                    .body("WheeledVehicle added at " + uri);
+            return ResponseEntity.created(uri)
+                    .body(new ApiResponse("WheeledVehicle added at " + uri, wheeledVehicle));
         }
     }
 
     @GetMapping(value = "/api/wheeledVehicle/{wheeledVehicleId}")
     ResponseEntity<WheeledVehicle> getVehicle(@PathVariable(name = "wheeledVehicleId") Integer wheeledVehicleId) throws ControllerException {
-        if(wheeledVehicleId < 0 || wheeledVehicleId >= wheeledVehicles.size()) {
-            throw new ControllerException("wheeledVehicleId " + wheeledVehicleId + " out of range");
-        } else {
+        if(checkIdRange(wheeledVehicleId)) {
             return ResponseEntity.ok(wheeledVehicles.get(wheeledVehicleId));
+        } else {
+            throw new ControllerException("wheeledVehicleId " + wheeledVehicleId + " out of range");
         }
     }
+
+    @DeleteMapping(value = "/api/wheeledVehicle/{wheeledVehicleId}")
+    ResponseEntity<ApiResponse> deleteVehicle(@PathVariable(name = "wheeledVehicleId") Integer wheeledVehicleId) throws ControllerException {
+        if(checkIdRange(wheeledVehicleId)) {
+            WheeledVehicle toDelete = wheeledVehicles.get(wheeledVehicleId);
+            wheeledVehicles.remove(wheeledVehicleId.intValue());
+            return ResponseEntity.ok(new ApiResponse("Vehicle deleted", toDelete));
+        } else {
+            throw new ControllerException("wheeledVehicleId " + wheeledVehicleId + " out of range");
+        }
+    }
+
+    private boolean checkIdRange(Integer wheeledVehicleId) {
+        return wheeledVehicleId != null && wheeledVehicleId >= 0 && wheeledVehicleId < wheeledVehicles.size();
+    }
+
 
 }
