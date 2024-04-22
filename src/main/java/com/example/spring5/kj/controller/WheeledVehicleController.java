@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+@SuppressWarnings("unused")
 @RestController
 public class WheeledVehicleController {
 
@@ -19,7 +20,7 @@ public class WheeledVehicleController {
     @GetMapping(value = "/")
     String root() {
         return "Hello World, we have " + wheeledVehicles.size() +
-                 (wheeledVehicles.size() > 1 ? " vehicles" : " vehicle") +
+                 (wheeledVehicles.size() != 1 ? " vehicles" : " vehicle") +
                 " in stock!";
     }
 

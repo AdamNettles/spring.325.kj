@@ -6,11 +6,12 @@ public class Truck extends WheeledVehicle {
 
     private final Integer flatBedLength;
 
-    protected Truck(Integer wheels, String model, Integer year, Integer flatBedLength) {
+    public Truck(Integer wheels, String model, Integer year, Integer flatBedLength) {
         super(wheels, model, year);
         this.flatBedLength = flatBedLength;
     }
 
+    @SuppressWarnings("unused")
     public Integer getFlatBedLength() {
         return flatBedLength;
     }

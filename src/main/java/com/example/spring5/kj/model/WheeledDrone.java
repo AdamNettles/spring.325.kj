@@ -11,17 +11,18 @@ public class WheeledDrone extends WheeledVehicle {
         this.hasCamera = hasCamera;
     }
 
+    @SuppressWarnings("unused")
     public Boolean getHasCamera() {
         return hasCamera;
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof WheeledDrone c &&
-            Objects.equals(this.getWheels(), c.getWheels()) &&
-            Objects.equals(this.getModel(), c.getModel()) &&
-            Objects.equals(this.getYear(), c.getYear()) &&
-            Objects.equals(this.hasCamera, c.hasCamera);
+        return o instanceof WheeledDrone w &&
+            Objects.equals(this.getWheels(), w.getWheels()) &&
+            Objects.equals(this.getModel(), w.getModel()) &&
+            Objects.equals(this.getYear(), w.getYear()) &&
+            Objects.equals(this.hasCamera, w.hasCamera);
     }
 
     @Override
