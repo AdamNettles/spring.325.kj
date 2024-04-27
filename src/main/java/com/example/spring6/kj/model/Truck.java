@@ -1,4 +1,4 @@
-package com.example.spring5.kj.model;
+package com.example.spring6.kj.model;
 
 import java.util.Objects;
 
@@ -6,8 +6,8 @@ public class Truck extends WheeledVehicle {
 
     private final Integer flatBedLength;
 
-    public Truck(Integer wheels, String model, Integer year, Integer flatBedLength) {
-        super(wheels, model, year);
+    public Truck(Integer wheels, String model, Integer year, Integer flatBedLength, Integer id) {
+        super(wheels, model, year, id);
         this.flatBedLength = flatBedLength;
     }
 
@@ -27,6 +27,12 @@ public class Truck extends WheeledVehicle {
 
     @Override
     public int hashCode() {
-        return  Objects.hash(this.getWheels(), this.getModel(), this.getYear(), this.flatBedLength);
+        return  Objects.hash(getWheels(), getModel(), getYear(), flatBedLength);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, %s, %s, %s",
+                getWheels(), getModel(), getYear(), flatBedLength);
     }
 }

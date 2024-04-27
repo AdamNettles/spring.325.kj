@@ -1,20 +1,19 @@
-package com.example.spring5.kj;
+package com.example.spring6.kj.model;
 
-import com.example.spring5.kj.model.Car;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BasicTests {
+public class ModelTest {
 
     @Test
     void testCustomEqualsAndHash() {
-        Car c = new Car(4, "fakeModel", 2000, true);
-        Car sameAsC = new Car(4, "fakeModel", 2000, true);
-        Car differentWheels = new Car(3, "fakeModel", 2000, true);
-        Car differentModel = new Car(4, "fakeModel2", 2000, true);
-        Car differentYear = new Car(4, "fakeModel", 2001, true);
-        Car differentHatch = new Car(4, "fakeModel", 2000, false);
+        Car c = new Car(4, "fakeModel", 2000, true, 1);
+        Car sameAsC = new Car(4, "fakeModel", 2000, true, 1);
+        Car differentWheels = new Car(3, "fakeModel", 2000, true, 2);
+        Car differentModel = new Car(4, "fakeModel2", 2000, true, 3);
+        Car differentYear = new Car(4, "fakeModel", 2001, true, 4);
+        Car differentHatch = new Car(4, "fakeModel", 2000, false, 5);
 
         assertThat(c).isEqualTo(sameAsC);
         assertThat(c).isNotEqualTo(differentWheels);

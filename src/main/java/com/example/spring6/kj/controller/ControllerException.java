@@ -1,10 +1,10 @@
-package com.example.spring5.kj.controller;
+package com.example.spring6.kj.controller;
 
 public class ControllerException extends Exception {
 
     private final String message;
 
-    ControllerException(String message) {
+    public ControllerException(String message) {
         this.message = message;
     }
 

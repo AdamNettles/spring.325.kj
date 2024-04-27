@@ -1,4 +1,4 @@
-package com.example.spring5.kj.model;
+package com.example.spring6.kj.model;
 
 import java.util.Objects;
 
@@ -6,8 +6,8 @@ public class WheeledDrone extends WheeledVehicle {
 
     private final Boolean hasCamera;
 
-    public WheeledDrone(Integer wheels, String model, Integer year, Boolean hasCamera) {
-        super(wheels, model, year);
+    public WheeledDrone(Integer wheels, String model, Integer year, Boolean hasCamera, Integer id) {
+        super(wheels, model, year, id);
         this.hasCamera = hasCamera;
     }
 
@@ -27,12 +27,12 @@ public class WheeledDrone extends WheeledVehicle {
 
     @Override
     public int hashCode() {
-        return  Objects.hash(
-                this.getWheels(),
-                this.getModel(),
-                this.getYear(),
-                this.hasCamera
-        );
+        return  Objects.hash(getWheels(),getModel(),getYear(),hasCamera);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, %s, %s, %s", getWheels(), getModel(), getYear(), hasCamera);
     }
 
 }
